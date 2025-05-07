@@ -1,0 +1,39 @@
+/* Coin Logo Styles */
+.coin-logo-container {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crypto-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Fallback for broken images */
+.crypto-icon[src*="placeholder.com"] {
+    padding: 5px;
+    background: rgba(240, 185, 11, 0.1);
+}
+
+/* Error State */
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: var(--red);
+}
+
+.error-message i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.error-message p {
+    margin-top: 10px;
+}

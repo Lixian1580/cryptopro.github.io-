@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Platform | CryptoPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="balance-manager.js"></script>
+    <style>
+        :root {
+            --primary-color: #f0b90b;
+            --primary-dark: #f8d12f;
+            --dark-bg: #0b0e11;
+            --darker-bg: #080b0f;
+            --dark-gray: #1e2329;
+            --text-primary: #f8f8f8;
+            --text-secondary: #b7bdc6;
+            --green: #02c076;
+            --red: #f6465d;
+            --long: #02c076;
+            --short: #f6465d;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(30, 35, 41, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(240, 185, 11, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .trading-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--dark-gray);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .pair-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pair-btn {
+            flex: 1;
+            min-width: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .pair-btn.active {
+            background: rgba(240, 185, 11, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .trade-form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: var(--darker-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .error-message {
+            color: var(--red);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .position-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .position-btn {
+            padding: 14px;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .long-btn {
+            background: var(--long);
+            color: white;
+        }
+
+        .short-btn {
+            background: var(--short);
+            color: white;
+        }
+
+        .position-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .timer-display {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .profit-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .profit-btn {
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .profit-btn.active {
+            background: rgba(240, 185, 11, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .processing {
+            text-align: center;
+            margin: 30px 0;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s;
+            background: rgba(30, 35, 41, 0.7);
+        }
+
+        .profit-result {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .long-profit {
+            color: var(--long);
+        }
+
+        .short-profit {
+            color: var(--short);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .balance-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--darker-bg);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .balance-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .balance-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .balance-amount {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .balance-btn {
+            background: var(--primary-color);
+            color: var(--dark-bg);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .balance-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .profit-animation {
+            animation: pulseProfit 1s;
+        }
+
+        @keyframes pulseProfit {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .profit-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pair-btn {
+                min-width: calc(50% - 5px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .trading-container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .position-btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <div class="back-button" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i>
+    </div>
+
+    <div class="trading-container">
+        <h1><i class="fas fa-chart-line"></i> CryptoPro Trading</h1>
+
+        <div class="balance-container">
+            <div class="balance-info">
+                <span class="balance-label">Available Balance</span>
+                <span class="balance-amount" id="userBalance">$10,000.00</span>
+            </div>
+            <button class="balance-btn" id="refreshBalance">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+
+        <div class="pair-selector">
+            <button class="pair-btn active" data-pair="BTC/USDT">BTC/USDT</button>
+            <button class="pair-btn" data-pair="ETH/USDT">ETH/USDT</button>
+            <button class="pair-btn" data-pair="SOL/USDT">SOL/USDT</button>
+            <button class="pair-btn" data-pair="XRP/USDT">XRP/USDT</button>
+        </div>
+
+        <div class="trade-form">
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="tradeAmount" placeholder="Enter amount" min="1">
+                <div class="error-message" id="amountError">Amount exceeds your balance!</div>
+            </div>
+
+            <div class="profit-options">
+                <button class="profit-btn" data-profit="50" data-time="50">50% (50s)</button>
+                <button class="profit-btn" data-profit="100" data-time="100">100% (100s)</button>
+                <button class="profit-btn" data-profit="150" data-time="150">150% (150s)</button>
+                <button class="profit-btn" data-profit="200" data-time="200">200% (200s)</button>
+            </div>
+
+            <div class="position-btns">
+                <button class="position-btn long-btn" id="longBtn" disabled>LONG</button>
+                <button class="position-btn short-btn" id="shortBtn" disabled>SHORT</button>
+            </div>
+        </div>
+
+        <div id="timerContainer" class="timer-display hidden">
+            <div>Time Remaining:</div>
+            <div id="tradeTimer">00:00</div>
+        </div>
+
+        <div id="processing" class="processing hidden">
+            <div class="spinner"></div>
+            <div>Processing your trade...</div>
+        </div>
+
+        <div id="result" class="result hidden">
+            <h3>Trade Completed!</h3>
+            <div id="profitResult" class="profit-result">+0% Profit</div>
+            <div>Amount: <span id="resultAmount">0</span> USD</div>
+            <div>Profit: <span id="profitAmount">0</span> USD</div>
+            <div>New Balance: <span id="newBalance">10,000.00</span> USD</div>
+            <button class="position-btn long-btn" id="newTradeBtn" style="margin-top: 20px;">New Trade</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const pairButtons = document.querySelectorAll('.pair-btn');
+        const profitButtons = document.querySelectorAll('.profit-btn');
+        const longBtn = document.getElementById('longBtn');
+        const shortBtn = document.getElementById('shortBtn');
+        const newTradeBtn = document.getElementById('newTradeBtn');
+        const tradeAmount = document.getElementById('tradeAmount');
+        const timerContainer = document.getElementById('timerContainer');
+        const tradeTimer = document.getElementById('tradeTimer');
+        const processing = document.getElementById('processing');
+        const result = document.getElementById('result');
+        const profitResult = document.getElementById('profitResult');
+        const resultAmount = document.getElementById('resultAmount');
+        const profitAmount = document.getElementById('profitAmount');
+        const userBalance = document.getElementById('userBalance');
+        const newBalance = document.getElementById('newBalance');
+        const refreshBalance = document.getElementById('refreshBalance');
+        const amountError = document.getElementById('amountError');
+
+        // Trade variables
+        let currentPair = 'BTC/USDT';
+        let selectedProfit = 0;
+        let selectedTime = 0;
+        let tradeInterval;
+        let remainingTime = 0;
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            const balance = getBalance();
+            userBalance.textContent = balance.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            // Add visual feedback
+            userBalance.classList.add('profit-animation');
+            setTimeout(() => {
+                userBalance.classList.remove('profit-animation');
+            }, 1000);
+
+            // Re-validate amount whenever balance changes
+            validateAmount();
+        }
+
+        // Validate amount input
+        function validateAmount() {
+            const amount = parseFloat(tradeAmount.value);
+            const currentBalance = getBalance();
+
+            // Reset error state
+            amountError.style.display = 'none';
+            tradeAmount.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+            if (amount && amount > 0) {
+                // Check if amount exceeds balance
+                if (amount > currentBalance) {
+                    amountError.style.display = 'block';
+                    tradeAmount.style.borderColor = 'var(--red)';
+                    longBtn.disabled = true;
+                    shortBtn.disabled = true;
+                    return false;
+                }
+
+                // Enable buttons if profit is also selected
+                if (selectedProfit > 0) {
+                    longBtn.disabled = false;
+                    shortBtn.disabled = false;
+                }
+                return true;
+            } else {
+                longBtn.disabled = true;
+                shortBtn.disabled = true;
+                return false;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', updateBalanceDisplay);
+
+        // Pair selection
+        pairButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                pairButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentPair = button.dataset.pair;
+            });
+        });
+
+        // Profit selection
+        profitButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                profitButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                selectedProfit = parseInt(button.dataset.profit);
+                selectedTime = parseInt(button.dataset.time);
+
+                // Validate amount again when profit changes
+                validateAmount();
+            });
+        });
+
+        // Amount validation
+        tradeAmount.addEventListener('input', validateAmount);
+
+        // Start trade (Long or Short)
+        function startTrade(position) {
+            const amount = parseFloat(tradeAmount.value);
+            if (!amount || amount <= 0 || !selectedProfit) return;
+
+            // Final validation check
+            if (!validateAmount()) return;
+
+            // Deduct amount from balance
+            updateBalance(-amount);
+            updateBalanceDisplay();
+
+            // Show processing
+            processing.classList.remove('hidden');
+
+            // Simulate trade processing (2 seconds)
+            setTimeout(() => {
+                processing.classList.add('hidden');
+                startTimer(position, amount);
+            }, 2000);
+        }
+
+        // Start countdown timer
+        function startTimer(position, amount) {
+            remainingTime = selectedTime;
+            updateTimerDisplay();
+            timerContainer.classList.remove('hidden');
+
+            tradeInterval = setInterval(() => {
+                remainingTime--;
+                updateTimerDisplay();
+
+                if (remainingTime <= 0) {
+                    clearInterval(tradeInterval);
+                    completeTrade(position, amount);
+                }
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            tradeTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Complete trade and show results
+        function completeTrade(position, amount) {
+            const profit = (amount * selectedProfit) / 100;
+            const total = amount + profit;
+
+            // Add profit to balance
+            updateBalance(total);
+            updateBalanceDisplay();
+
+            timerContainer.classList.add('hidden');
+
+            // Set result values
+            resultAmount.textContent = amount.toFixed(2);
+            profitAmount.textContent = profit.toFixed(2);
+            newBalance.textContent = getBalance().toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).replace('$', '');
+
+            if (position === 'long') {
+                profitResult.textContent = `+${selectedProfit}% Profit`;
+                profitResult.className = 'profit-result long-profit';
+            } else {
+                profitResult.textContent = `+${selectedProfit}% Profit`;
+                profitResult.className = 'profit-result short-profit';
+            }
+
+            result.classList.remove('hidden');
+        }
+
+        // New trade
+        function resetTrade() {
+            result.classList.add('hidden');
+            tradeAmount.value = '';
+            profitButtons.forEach(btn => btn.classList.remove('active'));
+            longBtn.disabled = true;
+            shortBtn.disabled = true;
+            selectedProfit = 0;
+            selectedTime = 0;
+        }
+
+        // Refresh balance
+        refreshBalance.addEventListener('click', updateBalanceDisplay);
+
+        // Event listeners
+        longBtn.addEventListener('click', () => startTrade('long'));
+        shortBtn.addEventListener('click', () => startTrade('short'));
+        newTradeBtn.addEventListener('click', resetTrade);
+    </script>
+</body>
+</html>

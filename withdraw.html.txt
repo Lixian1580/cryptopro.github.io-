@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoPro | Withdraw Funds</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="balance-manager.js"></script>
+    <style>
+        :root {
+            --primary-color: #f0b90b;
+            --primary-dark: #f8d12f;
+            --dark-bg: #0b0e11;
+            --darker-bg: #080b0f;
+            --dark-gray: #1e2329;
+            --text-primary: #f8f8f8;
+            --text-secondary: #b7bdc6;
+            --green: #02c076;
+            --red: #f6465d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            color: var(--text-primary);
+            background-color: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(30, 35, 41, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(240, 185, 11, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Withdraw Section Styles */
+        .withdraw-section {
+            background-color: var(--dark-gray);
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .withdraw-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .withdraw-header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .withdraw-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .withdraw-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .crypto-select,
+        .address-input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--darker-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .amount-input {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .amount-input input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--darker-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .max-btn {
+            position: absolute;
+            right: 10px;
+            background-color: var(--primary-color);
+            color: var(--dark-bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .max-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .balance-info {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .balance-info span {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .withdraw-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: var(--dark-bg);
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .withdraw-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .withdraw-btn:disabled {
+            background-color: var(--dark-gray);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: var(--red);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Withdrawal History Styles */
+        .history-section {
+            background-color: var(--dark-gray);
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-header h2 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .close-history {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-crypto {
+            display: flex;
+            align-items: center;
+        }
+
+        .history-crypto i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .history-details {
+            text-align: right;
+        }
+
+        .history-amount {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .history-date {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .history-status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background-color: rgba(2, 192, 118, 0.2);
+            color: var(--green);
+        }
+
+        .status-pending {
+            background-color: rgba(240, 185, 11, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+
+            .back-button {
+                top: 15px;
+                left: 15px;
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <div class="back-button" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i>
+    </div>
+
+    <div class="container">
+        <!-- Withdraw Section -->
+        <div class="withdraw-section" id="withdrawSection">
+            <div class="withdraw-header">
+                <h1><i class="fas fa-coins"></i> WITHDRAW CRYPTO</h1>
+                <p>Select cryptocurrency and enter amount to withdraw</p>
+            </div>
+
+            <div class="withdraw-form">
+                <div class="form-group">
+                    <label for="withdrawCrypto">Select Cryptocurrency</label>
+                    <select id="withdrawCrypto" class="crypto-select">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="USDT">Tether (USDT)</option>
+                        <option value="USDC">USD Coin (USDC)</option>
+                        <option value="XRP">XRP (XRP)</option>
+                        <option value="SOL">Solana (SOL)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdrawAmount">Amount</label>
+                    <div class="amount-input">
+                        <input type="number" id="withdrawAmount" placeholder="0.00">
+                        <span class="max-btn" id="maxBtn">MAX</span>
+                    </div>
+                    <div class="balance-info">
+                        Available: <span id="availableBalance">$10,000.00</span>
+                    </div>
+                    <div class="error-message" id="amountError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdrawAddress">Wallet Address</label>
+                    <input type="text" id="withdrawAddress" class="address-input" placeholder="Enter recipient wallet address">
+                    <div class="error-message" id="addressError"></div>
+                </div>
+
+                <button class="withdraw-btn" id="withdrawBtn">WITHDRAW</button>
+            </div>
+        </div>
+
+        <!-- Withdrawal History Section -->
+        <div class="history-section" id="historySection">
+            <div class="history-header">
+                <h2><i class="fas fa-history"></i> WITHDRAWAL HISTORY</h2>
+                <button class="close-history" id="closeHistory"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="historyContent">
+                <!-- History items will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const withdrawAmountInput = document.getElementById('withdrawAmount');
+        const maxBtn = document.getElementById('maxBtn');
+        const availableBalanceSpan = document.getElementById('availableBalance');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const amountError = document.getElementById('amountError');
+        const addressError = document.getElementById('addressError');
+        const withdrawAddressInput = document.getElementById('withdrawAddress');
+        const withdrawCryptoSelect = document.getElementById('withdrawCrypto');
+        const historySection = document.getElementById('historySection');
+        const historyContent = document.getElementById('historyContent');
+        const closeHistoryBtn = document.getElementById('closeHistory');
+
+        // Withdrawal history array
+        let withdrawalHistory = JSON.parse(localStorage.getItem('withdrawalHistory')) || [];
+
+        // Update available balance display
+        function updateBalanceDisplay() {
+            const balance = getBalance();
+            availableBalanceSpan.textContent = balance.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // MAX button functionality
+        maxBtn.addEventListener('click', function() {
+            const balance = getBalance();
+            withdrawAmountInput.value = balance.toFixed(8);
+            validateForm();
+        });
+
+        // Validate form on input
+        withdrawAmountInput.addEventListener('input', validateForm);
+        withdrawAddressInput.addEventListener('input', validateForm);
+
+        // Withdraw button click handler
+        withdrawBtn.addEventListener('click', function() {
+            if (validateForm()) {
+                const amount = parseFloat(withdrawAmountInput.value);
+                const crypto = withdrawCryptoSelect.options[withdrawCryptoSelect.selectedIndex].text;
+                const address = withdrawAddressInput.value.trim();
+
+                // Process withdrawal
+                processWithdrawal(crypto, amount, address);
+            }
+        });
+
+        // Close history section
+        closeHistoryBtn.addEventListener('click', function() {
+            historySection.style.display = 'none';
+        });
+
+        // Process withdrawal
+        function processWithdrawal(crypto, amount, address) {
+            // Add to withdrawal history
+            addToHistory(crypto, amount, address);
+
+            // Update balance
+            updateBalance(-amount);
+            updateBalanceDisplay();
+
+            // Show success message and history
+            alert(`Withdrawal request submitted successfully!\n${amount.toFixed(8)} ${crypto} to ${address.substring(0, 12)}...`);
+            showHistory();
+
+            // Reset form
+            withdrawAmountInput.value = '';
+            withdrawAddressInput.value = '';
+            withdrawBtn.disabled = true;
+        }
+
+        // Add withdrawal to history
+        function addToHistory(crypto, amount, address) {
+            const now = new Date();
+            const transaction = {
+                id: Date.now(),
+                crypto: crypto,
+                amount: amount,
+                address: address,
+                date: now.toLocaleString(),
+                status: 'Pending'
+            };
+
+            withdrawalHistory.unshift(transaction);
+            localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+
+            // Simulate status change after 5 seconds
+            setTimeout(() => {
+                transaction.status = 'Completed';
+                localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+                if (historySection.style.display !== 'none') {
+                    showHistory();
+                }
+            }, 5000);
+        }
+
+        // Show withdrawal history
+        function showHistory() {
+            if (withdrawalHistory.length === 0) return;
+
+            // Clear previous content
+            historyContent.innerHTML = '';
+
+            // Add each transaction to the history
+            withdrawalHistory.forEach(transaction => {
+                const cryptoParts = transaction.crypto.split(' ');
+                const cryptoName = cryptoParts[0];
+                const cryptoCode = cryptoParts[1].replace(/[()]/g, '');
+
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div class="history-crypto">
+                        <i class="fab fa-${cryptoCode.toLowerCase()}"></i>
+                        <div>
+                            <div>${cryptoName}</div>
+                            <div class="history-date">${transaction.date}</div>
+                            <div class="history-address" style="font-size: 0.7rem; color: var(--text-secondary);">${transaction.address.substring(0, 12)}...${transaction.address.slice(-4)}</div>
+                        </div>
+                    </div>
+                    <div class="history-details">
+                        <div class="history-amount">${transaction.amount.toFixed(8)} ${cryptoCode}</div>
+                        <div class="history-status ${transaction.status === 'Completed' ? 'status-completed' : 'status-pending'}">${transaction.status}</div>
+                    </div>
+                `;
+
+                historyContent.appendChild(historyItem);
+            });
+
+            // Show the history section
+            historySection.style.display = 'block';
+        }
+
+        // Validation function
+        function validateForm() {
+            let isValid = true;
+            const amount = parseFloat(withdrawAmountInput.value);
+            const address = withdrawAddressInput.value.trim();
+            const balance = getBalance();
+
+            // Reset error states
+            amountError.style.display = 'none';
+            addressError.style.display = 'none';
+            withdrawAmountInput.style.borderColor = '';
+            withdrawAddressInput.style.borderColor = '';
+
+            // Validate amount
+            if (isNaN(amount)) {
+                amountError.textContent = 'Please enter a valid amount';
+                amountError.style.display = 'block';
+                withdrawAmountInput.style.borderColor = 'var(--red)';
+                isValid = false;
+            } else if (amount <= 0) {
+                amountError.textContent = 'Amount must be greater than 0';
+                amountError.style.display = 'block';
+                withdrawAmountInput.style.borderColor = 'var(--red)';
+                isValid = false;
+            } else if (amount > balance) {
+                amountError.textContent = 'Amount exceeds available balance';
+                amountError.style.display = 'block';
+                withdrawAmountInput.style.borderColor = 'var(--red)';
+                isValid = false;
+            }
+
+            // Validate address
+            if (!address) {
+                addressError.textContent = 'Please enter a wallet address';
+                addressError.style.display = 'block';
+                withdrawAddressInput.style.borderColor = 'var(--red)';
+                isValid = false;
+            } else if (address.length < 10) {
+                addressError.textContent = 'Please enter a valid wallet address';
+                addressError.style.display = 'block';
+                withdrawAddressInput.style.borderColor = 'var(--red)';
+                isValid = false;
+            }
+
+            // Enable/disable withdraw button
+            withdrawBtn.disabled = !isValid;
+
+            return isValid;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBalanceDisplay();
+
+            // Show history if there are any withdrawals
+            if (withdrawalHistory.length > 0) {
+                showHistory();
+            }
+        });
+    </script>
+</body>
+</html>

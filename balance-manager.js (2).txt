@@ -1,0 +1,29 @@
+// Initialize balance if not set
+if (!localStorage.getItem('userBalance')) {
+    localStorage.setItem('userBalance', '10000.00'); // Default starting balance
+}
+
+// Get current balance
+function getBalance() {
+    return parseFloat(localStorage.getItem('userBalance'));
+}
+
+// Update balance display on page
+function updateBalanceDisplay() {
+    const balanceElements = document.querySelectorAll('.balance-display');
+    const balance = getBalance();
+    balanceElements.forEach(el => {
+        el.textContent = `$${balance.toFixed(2)}`;
+    });
+}
+
+// Modify balance (positive to add, negative to subtract)
+function updateBalance(amount) {
+    const newBalance = getBalance() + amount;
+    localStorage.setItem('userBalance', newBalance.toString());
+    updateBalanceDisplay();
+    return newBalance;
+}
+
+// Update display when page loads
+document.addEventListener('DOMContentLoaded', updateBalanceDisplay);

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | CryptoPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #f0b90b;
+            --primary-dark: #f8d12f;
+            --dark-bg: #0b0e11;
+            --darker-bg: #080b0f;
+            --dark-gray: #1e2329;
+            --text-primary: #f8f8f8;
+            --text-secondary: #b7bdc6;
+            --green: #02c076;
+            --red: #f6465d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            color: var(--text-primary);
+            background-color: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(30, 35, 41, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(240, 185, 11, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--dark-bg);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .user-id {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .settings-menu {
+            background-color: var(--dark-gray);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            color: var(--primary-color);
+        }
+
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--darker-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .menu-text {
+            flex: 1;
+        }
+
+        .menu-text h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .menu-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .menu-arrow {
+            color: var(--text-secondary);
+        }
+
+        .language-selector {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+        }
+
+        .language-option {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .language-option:hover {
+            background-color: rgba(240, 185, 11, 0.1);
+            color: var(--primary-color);
+        }
+
+        .language-option.active {
+            background-color: rgba(240, 185, 11, 0.2);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+            padding-left: 7px;
+        }
+
+        .history-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-left {
+            flex: 1;
+        }
+
+        .history-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .history-amount {
+            font-weight: bold;
+        }
+
+        .positive {
+            color: var(--green);
+        }
+
+        .negative {
+            color: var(--red);
+        }
+
+        .logout-confirm {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+        }
+
+        .logout-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .confirm-btn {
+            background-color: var(--red);
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: var(--dark-gray);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .settings-header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
+
+            .user-profile {
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-item {
+                padding: 12px 0;
+            }
+
+            .menu-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+
+            .logout-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <div class="back-button" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i>
+    </div>
+
+    <div class="container">
+        <div class="settings-header">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                    <h3>User Profile</h3>
+                    <div class="user-id">ID: <span id="userId">CP-</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-menu">
+            <!-- Change Language -->
+            <div class="menu-item" onclick="toggleLanguage()">
+                <div class="menu-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="menu-text">
+                    <h3>Change Language</h3>
+                    <p>Select your preferred language</p>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="language-selector" id="languageSelector">
+                <div class="language-option active" data-lang="en">English</div>
+                <div class="language-option" data-lang="es">Español</div>
+                <div class="language-option" data-lang="fr">Français</div>
+                <div class="language-option" data-lang="zh">中文</div>
+                <div class="language-option" data-lang="ja">日本語</div>
+                <div class="language-option" data-lang="ko">한국어</div>
+            </div>
+
+            <!-- Order History -->
+            <div class="menu-item" onclick="toggleSection('orderHistory')">
+                <div class="menu-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="menu-text">
+                    <h3>Order History</h3>
+                    <p>View your trading history</p>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="history-section" id="orderHistory">
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-title">BTC/USDT - LONG</div>
+                        <div class="history-date">2023-10-15 14:30:22</div>
+                    </div>
+                    <div class="history-amount positive">+$245.50</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-title">ETH/USDT - SHORT</div>
+                        <div class="history-date">2023-10-14 09:15:07</div>
+                    </div>
+                    <div class="history-amount negative">-$120.75</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-title">SOL/USDT - LONG</div>
+                        <div class="history-date">2023-10-12 16:45:33</div>
+                    </div>
+                    <div class="history-amount positive">+$89.20</div>
+                </div>
+            </div>
+
+            <!-- Withdraw History -->
+            <div class="menu-item" onclick="toggleSection('withdrawHistory')">
+                <div class="menu-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="menu-text">
+                    <h3>Withdraw History</h3>
+                    <p>View your withdrawal records</p>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="history-section" id="withdrawHistory">
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-title">BTC Withdrawal</div>
+                        <div class="history-date">2023-10-10 11:20:15</div>
+                    </div>
+                    <div class="history-amount negative">-0.05 BTC</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-title">USDT Withdrawal</div>
+                        <div class="history-date">2023-10-05 13:45:30</div>
+                    </div>
+                    <div class="history-amount negative">-500.00 USDT</div>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="menu-item" onclick="toggleSection('logoutConfirm')">
+                <div class="menu-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <div class="menu-text">
+                    <h3>Logout</h3>
+                    <p>Sign out from your account</p>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="logout-confirm" id="logoutConfirm">
+                <p>Are you sure you want to logout?</p>
+                <div <div class="logout-btn confirm-btn" onclick="window.location.href='CryptoPro.html'">Yes, Logout</button>
+    <i class="fas fa-arrow-left"></i>
+</div>
+
+
+                    <button class="logout-btn cancel-btn" onclick="toggleSection('logoutConfirm')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate random user ID on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate random user ID (CP- followed by 8 random digits)
+            const randomId = 'CP-' + Math.floor(10000000 + Math.random() * 90000000);
+            document.getElementById('userId').textContent = randomId;
+
+            // Set avatar initial from first letter of "User"
+            document.getElementById('userAvatar').textContent = 'U';
+        });
+
+        // Toggle language selector
+        function toggleLanguage() {
+            const languageSelector = document.getElementById('languageSelector');
+            const allSections = document.querySelectorAll('.language-selector, .history-section, .logout-confirm');
+
+            // Hide all other sections first
+            allSections.forEach(section => {
+                if (section !== languageSelector) {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Toggle current section
+            if (languageSelector.style.display === 'block') {
+                languageSelector.style.display = 'none';
+            } else {
+                languageSelector.style.display = 'block';
+            }
+
+            // Set click handlers for language options
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.language-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    // Here you would typically change the language
+                    alert('Language changed to: ' + this.textContent);
+                    languageSelector.style.display = 'none';
+                });
+            });
+        }
+
+        // Toggle any section
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const allSections = document.querySelectorAll('.language-selector, .history-section, .logout-confirm');
+
+            // Hide all other sections first
+            allSections.forEach(sec => {
+                if (sec !== section) {
+                    sec.style.display = 'none';
+                }
+            });
+
+            // Toggle current section
+            if (section.style.display === 'block') {
+                section.style.display = 'none';
+            } else {
+                section.style.display = 'block';
+            }
+        }
+
+        // Logout function - redirects to CryptoPro.html
+        function logout() {
+            // Here you would typically handle the logout process
+            alert('You have been logged out successfully');
+            window.location.href = 'CryptoPro.html'; // Redirect to CryptoPro.html
+        }
+    </script>
+</body>
+</html>

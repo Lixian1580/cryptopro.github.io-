@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoPro | Professional Trading Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #f0b90b;
+            --primary-dark: #f8d12f;
+            --dark-bg: #0b0e11;
+            --darker-bg: #080b0f;
+            --dark-gray: #1e2329;
+            --text-primary: #eaecef;
+            --text-secondary: #b7bdc6;
+            --green: #02c076;
+            --red: #f6465d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            color: var(--text-primary);
+            background-color: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        /* 3D Background */
+        .bg-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(240, 185, 11, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(240, 185, 11, 0.1) 0%, transparent 30%),
+                var(--dark-bg);
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background-color: rgba(11, 14, 17, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--dark-gray);
+        }
+
+        .login-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .register-btn {
+            background-color: var(--primary-color);
+            color: var(--dark-bg);
+        }
+
+        .register-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Account Container */
+        .account-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(30, 35, 41, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .account-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(40, 45, 53, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(240, 185, 11, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: var(--dark-bg);
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-left: 5px;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .verification-code {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(40, 45, 53, 0.8);
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .verification-code span {
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .verification-code button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .error-message {
+            color: var(--red);
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--green);
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .account-container {
+                margin: 30px 15px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-3d"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            <span>CryptoPro</span>
+        </div>
+        <div class="auth-buttons">
+            <button class="btn login-btn" onclick="window.location.href='CryptoPro.html'">Back to Home</button>
+        </div>
+    </header>
+
+    <div class="account-container">
+        <h1 class="account-title"><i class="fas fa-user-shield"></i> Account</h1>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="login">Log In</div>
+            <div class="tab" data-tab="register">Register</div>
+            <div class="tab" data-tab="reset">Reset Password</div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="tab-content active" id="login-form">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" required>
+                </div>
+                <div class="error-message" id="login-error"></div>
+                <button type="submit" class="submit-btn">Log In</button>
+            </form>
+            <div class="form-footer">
+                Don't have an account? <a href="#" onclick="switchTab('register')">Register</a>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="tab-content" id="register-form">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm">Confirm Password</label>
+                    <input type="password" id="register-confirm" class="form-control" required>
+                </div>
+
+                <div class="verification-code">
+                    <span id="verification-code-display">A7B9C2</span>
+                    <button type="button" id="refresh-code"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div class="form-group">
+                    <label for="verification-input">Enter Verification Code</label>
+                    <input type="text" id="verification-input" class="form-control" required>
+                </div>
+
+                <div class="error-message" id="register-error"></div>
+                <div class="success-message" id="register-success"></div>
+                <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+            <div class="form-footer">
+                Already have an account? <a href="#" onclick="switchTab('login')">Log In</a>
+            </div>
+        </div>
+
+        <!-- Reset Password Form -->
+        <div class="tab-content" id="reset-form">
+            <form id="resetForm">
+                <div class="form-group">
+                    <label for="reset-email">Email</label>
+                    <input type="email" id="reset-email" class="form-control" required>
+                </div>
+
+                <div class="verification-code">
+                    <span id="reset-verification-code">X3Y5Z8</span>
+                    <button type="button" id="reset-refresh-code"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div class="form-group">
+                    <label for="reset-verification-input">Enter Verification Code</label>
+                    <input type="text" id="reset-verification-input" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-new-password">Confirm New Password</label>
+                    <input type="password" id="confirm-new-password" class="form-control" required>
+                </div>
+
+                <div class="error-message" id="reset-error"></div>
+                <div class="success-message" id="reset-success"></div>
+                <button type="submit" class="submit-btn">Reset Password</button>
+            </form>
+            <div class="form-footer">
+                Remember your password? <a href="#" onclick="switchTab('login')">Log In</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate random verification code
+        function generateVerificationCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Initialize verification codes
+        let currentVerificationCode = generateVerificationCode();
+        let currentResetVerificationCode = generateVerificationCode();
+
+        // Switch between tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.tab === tabId) {
+                    tab.classList.add('active');
+                }
+            });
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tabId + '-form') {
+                    content.classList.add('active');
+                }
+            });
+
+            // Generate new verification codes when tabs are shown
+            if (tabId === 'register') {
+                currentVerificationCode = generateVerificationCode();
+                document.getElementById('verification-code-display').textContent = currentVerificationCode;
+            }
+            if (tabId === 'reset') {
+                currentResetVerificationCode = generateVerificationCode();
+                document.getElementById('reset-verification-code').textContent = currentResetVerificationCode;
+            }
+        }
+
+        // Refresh verification codes
+        document.getElementById('refresh-code').addEventListener('click', function() {
+            currentVerificationCode = generateVerificationCode();
+            document.getElementById('verification-code-display').textContent = currentVerificationCode;
+        });
+
+        document.getElementById('reset-refresh-code').addEventListener('click', function() {
+            currentResetVerificationCode = generateVerificationCode();
+            document.getElementById('reset-verification-code').textContent = currentResetVerificationCode;
+        });
+
+        // Handle tab clicks
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // Handle registration
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm').value;
+            const userCode = document.getElementById('verification-input').value;
+
+            const errorElement = document.getElementById('register-error');
+            const successElement = document.getElementById('register-success');
+
+            // Reset messages
+            errorElement.style.display = 'none';
+            successElement.style.display = 'none';
+
+            // Validate
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (password.length < 8) {
+                errorElement.textContent = 'Password must be at least 8 characters!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (userCode.toUpperCase() !== currentVerificationCode) {
+                errorElement.textContent = 'Invalid verification code!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userExists = users.some(user => user.email === email);
+
+            if (userExists) {
+                errorElement.textContent = 'User with this email already exists!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                name: name,
+                email: email,
+                password: password
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Show success message
+            successElement.textContent = 'Account created successfully! You can now log in.';
+            successElement.style.display = 'block';
+
+            // Clear form
+            this.reset();
+            currentVerificationCode = generateVerificationCode();
+            document.getElementById('verification-code-display').textContent = currentVerificationCode;
+
+            // Switch to login tab after 2 seconds
+            setTimeout(() => {
+                switchTab('login');
+            }, 2000);
+        });
+
+        // Handle login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const errorElement = document.getElementById('login-error');
+
+            // Reset message
+            errorElement.style.display = 'none';
+
+            // Check credentials
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(user => user.email === email && user.password === password);
+
+            if (!user) {
+                errorElement.textContent = 'Invalid email or password!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Store current user in localStorage
+            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            // Redirect to home page
+            window.location.href = 'index.html';
+        });
+
+        // Handle password reset
+        document.getElementById('resetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('reset-email').value;
+            const userCode = document.getElementById('reset-verification-input').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmNewPassword = document.getElementById('confirm-new-password').value;
+
+            const errorElement = document.getElementById('reset-error');
+            const successElement = document.getElementById('reset-success');
+
+            // Reset messages
+            errorElement.style.display = 'none';
+            successElement.style.display = 'none';
+
+            // Validate
+            if (newPassword !== confirmNewPassword) {
+                errorElement.textContent = 'New passwords do not match!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                errorElement.textContent = 'Password must be at least 8 characters!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (userCode.toUpperCase() !== currentResetVerificationCode) {
+                errorElement.textContent = 'Invalid verification code!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Check if user exists
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(user => user.email === email);
+
+            if (userIndex === -1) {
+                errorElement.textContent = 'No account found with this email!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Update password
+            users[userIndex].password = newPassword;
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Show success message
+            successElement.textContent = 'Password reset successfully! You can now log in with your new password.';
+            successElement.style.display = 'block';
+
+            // Clear form
+            this.reset();
+            currentResetVerificationCode = generateVerificationCode();
+            document.getElementById('reset-verification-code').textContent = currentResetVerificationCode;
+
+            // If current user is logged in, update their session
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser && currentUser.email === email) {
+                currentUser.password = newPassword;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+
+            // Switch to login tab after 2 seconds
+            setTimeout(() => {
+                switchTab('login');
+            }, 2000);
+        });
+
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = 'index.html';
+            }
+
+            // Initialize verification codes
+            document.getElementById('verification-code-display').textContent = currentVerificationCode;
+            document.getElementById('reset-verification-code').textContent = currentResetVerificationCode;
+        });
+    </script>
+</body>
+</html>
